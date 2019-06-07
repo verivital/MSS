@@ -1,8 +1,9 @@
-function xdot = supply(x,tau)
-% xdot = supply(x,tau) returns the speed the time derivative xdot = A*x + B*tau
+function [xdot, U] = supply(x,tau)
+% [xdot, U] = supply(x,tau) returns the speed the time derivative xdot = A*x + B*tau
 % of the state vector: x = [ x y psi u v r]'  for a supply vessel length L = 76 m.
 %
-% The model is only valid around zero speed (dynamic positioning).
+% The model is only valid around zero speed (dynamic positioning) and 
+% small speeds U = sqrt(u^2+v^2).
 %
 % u     = surge velocity                    (m/s)     
 % v     = sway velocity                     (m/s)
@@ -19,8 +20,10 @@ function xdot = supply(x,tau)
 %
 % Author:     Thor I. Fossen
 % Date:       12 July 2002
-% Revisions:  24 February 2004 Included missing mass scaling in the Bis transformation
-%             12 October 2011  Corrected T and Tinv, which were switched 
+% Revisions:  24 February 2004 - Included missing mass scaling in the Bis transformation
+%             12 October 2011 - Corrected T and Tinv, which were switched 
+%             27 May 2019 - Added U as ouput
+%             31 May 2019 - Included the rotation matrix in yaw
 
 % Normalization variables
 L    =  76.2;           % length of ship (m)
@@ -44,14 +47,22 @@ Dbis = [0.0358        0        0
  if (length(x)  ~= 6),error('x-vector must have dimension 6 !');end
  if (length(tau) ~= 3),error('u-vector must have dimension 3 !');end
  
+ psi = x(6);
+ R = [cos(psi) -sin(psi) 0
+      sin(psi)  cos(psi) 0
+            0         0  1 ];
+  
  M = (mass*Tinv^2)*(T*Mbis*Tinv);
  D = (mass*Tinv^2)*(sqrt(g/L)*T*Dbis*Tinv);
  
- A = [ zeros(3,3) eye(3)
-     zeros(3,3) -inv(M)*D ];
+ A = [ zeros(3,3)         R
+       zeros(3,3) -inv(M)*D ];
  
  B = [zeros(3,3); inv(M) ];
  
  % Dimensional state derivative
  xdot = A*x + B*tau;
+ 
+ % speed
+  U = sqrt(x(1)^2+x(2)^2);
  
