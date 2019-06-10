@@ -37,7 +37,7 @@ opt_intersect = 0; % check if segments intersect
 %figure; hold on;
 
 for i_p = 2 : p_N
-    clc;
+    %clc;
     L_x = L_min + (L_max - L_min) * rand(1,1);
     L_y = L_min + (L_max - L_min) * rand(1,1);
     
@@ -98,7 +98,10 @@ for i_p = 2 : p_N
     angle_list(i_p) = angle_next;
     p_list(i_p,:) = p_next;
     disp('Adding next segment...')
+    plot(p_list(1:i_p,1), p_list(1:i_p,2),'*-');
     %pause;
 end
 
 plot(p_list(:,1), p_list(:,2),'*-');
+% mm = max(max(abs(p_list))); 
+% axis([-mm mm -mm mm]) % Fix axis dimensions so plot figure is square
