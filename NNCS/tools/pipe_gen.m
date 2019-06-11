@@ -22,8 +22,8 @@ p_list = zeros(p_N,2);
 p_list(1,:) = p_init;
 
 % List of angles
-angle_list = zeros(p_N,1);
-angle_list(1,:) = 0; % degrees
+angle_list = zeros(p_N-1,1);
+%angle_list(1,:) = 0; % degrees
 
 % Angle limits 
 theta_min = deg2rad(-180);
@@ -95,7 +95,7 @@ for i_p = 2 : p_N
 %             bad_angle = 0
 %         end
     end
-    angle_list(i_p) = angle_next;
+    angle_list(i_p-1) = angle_next;
     p_list(i_p,:) = p_next;
     disp('Adding next segment...')
     plot(p_list(1:i_p,1), p_list(1:i_p,2),'*-');
