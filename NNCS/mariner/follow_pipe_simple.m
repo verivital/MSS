@@ -8,7 +8,7 @@ pipe_gen; %could make this a function and have as inputs the number of segments
 hold on;
 %pause;clc;
 % final simulation time (sec)
-t_f = 600;
+t_f = 10000;
 % sample time (sec)
 h   = 0.1;  % UUV simulations work at 1 Hz
 
@@ -28,13 +28,17 @@ ns = 1;        % number of pipes seen by ship
 psi_ref = deg2rad(angle_list(1));              % desired heading angle
 i = 1;
 time = 0;
-%xy_norm = zeros(6001,1);
+xy_norm = zeros(n,2);  %memory allocation for distance between ship and objective
 
-while ns < length(p_list) && i < n - 1
-    %psi_ref = deg2rad(angle_list(ns));
+while ns < length(p_list) - 1 && i < n - 1
+    xy_norm(i,:) = [pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]),ns];
     if pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]) < 100
         ns = ns+1;
-        fprintf('Segment number currently following... %f at time %f\n',round(ns),time)
+        fprintf('Segment # currently following... %d at time %f\n',int64(ns),time)
+    elseif xy_norm(i,1) > xy_norm(max(1,i-1),1) && xy_norm(i,2) == xy_norm(max(1,i-1),2)
+        ns = ns+1;
+        fprintf('Getting too far from objective\n');
+        fprintf('Changed to follow segment #%d at time %f\n',int64(ns),time)
     end
     % Calculate reference psi
     psi_ref = deg2rad(angle_list(ns));
@@ -57,12 +61,10 @@ while ns < length(p_list) && i < n - 1
     x = euler2(xdot,x,h);             % Euler integration
     %pause;
     i = i+1;
-    if mod(time,5) == 0
+    if mod(time,10) == 0
         plot(x(4),x(5),'s'); % ship location
-        fprintf('Segment number currently following... %f at time %f\n',round(ns),time)
-        pause;
+        fprintf('Segment number currently following... %d at time %f\n',round(ns),time)
+        %pause;
     end
 end
-
-
-plot(xout(:,5),xout(:,6));
+%plot(xout(:,5),xout(:,6));

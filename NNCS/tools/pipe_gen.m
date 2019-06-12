@@ -13,8 +13,12 @@ p_init = [x_init,y_init];
 p_N = 25;
 
 % max length of pipe (along axes, triangle may be larger)
-L_max = 500;
-L_min = 25;
+% For actual UUV
+% L_max = 500;
+% L_min = 25; 
+% For mariner
+L_max = 1500;
+L_min = 1500; 
 L_hyp = sqrt(L_max^2 + L_min^2);
 
 % List of begin-end points for pipes
@@ -49,13 +53,13 @@ for i_p = 2 : p_N
         
         p_next = p_list(i_p - 1,:) + [L_x,L_y] * rot_theta;
         diff_next = p_next - p_list(i_p-1,:);
-        angle_next = rad2deg(atan2(diff_next(2),diff_next(1)))
-        angle_list(i_p-1) - angle_next
+        angle_next = rad2deg(atan2(diff_next(2),diff_next(1)));
+        angle_change(i_p) = -angle_list(i_p-1) + angle_next
         if abs(angle_next - angle_list(i_p-1)) < 90
             bad_angle = 0;
-            disp('Good angle');
+            fprintf('Good angle\n');
         else
-            disp('No, I do not like that one')
+            fprintf('No, I do not like that one\n')
         end       
 %         if opt_intersect
 %             for i_theta = 1 : i_p - 1
@@ -97,11 +101,11 @@ for i_p = 2 : p_N
     end
     angle_list(i_p-1) = angle_next;
     p_list(i_p,:) = p_next;
-    disp('Adding next segment...')
+    fprintf('Adding next segment...\n')
     plot(p_list(1:i_p,1), p_list(1:i_p,2),'*-');
     %pause;
 end
 
-plot(p_list(:,1), p_list(:,2),'*-');
+%plot(p_list(:,1), p_list(:,2),'*-');
 % mm = max(max(abs(p_list))); 
 % axis([-mm mm -mm mm]) % Fix axis dimensions so plot figure is square
