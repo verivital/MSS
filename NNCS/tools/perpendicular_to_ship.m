@@ -11,10 +11,11 @@ len = 60; % 0 meters each side to the ship
 % Second way of expressing line segments
 % Calculate end points of perpendicular line up to a distance of 60 meters 
 % to each side (range of side sonar)
+angle = angle + pi/2;
 x1 = x-len*cos(angle);
 x2 = x+len*cos(angle);
 y1 = y-len*sin(angle);
-y2 = y+len*cos(angle);
-
+y2 = y+len*sin(angle);
+fprintf('Perpendicular to ship axis: (x1,x2,y1,y2) [%f,%f,%f,%f]\n',x1,x2,y1,y2);
 end
 

@@ -20,7 +20,10 @@ dis = sqrt((int_point(1) - ship_pos(1))^2 + (int_point(2) - ship_pos(2))^2);
 
 fprintf('Distance from ship to intersection point %f\n', dis);
 fprintf('Intersection point [%f,%f]\n',int_point(1),int_point(2));
-hold on; plot(int_point(1),int_point(2),'o');
+plot([x1_start,x1_end],[y1_start,y1_end]);
+hold on; 
+plot([x2_start,x2_end],[y2_start,y2_end]);
+plot(int_point(1),int_point(2),'o');
 if (xi >= x2_start) && (xi <= x2_end) && (dis <= 60)
     output = true;
 else

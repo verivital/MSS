@@ -1,11 +1,14 @@
 %% Generate a pipeline made of Np pipe segments for mariner to follow
+% It follows the angle of a pipe until the ship s close enough to the
+% begining of the next pipe segment, and updates its desired heading angle
+% to that of the next segment
 addpath(genpath('C:\Users\manzand\Documents\MATLAB\MSS')); % add path to MATLAB
 % Generate pipeline
 pipe_gen; %could make this a function and have as inputs the number of segments
 hold on;
 %pause;clc;
 % final simulation time (sec)
-t_f = 600;
+t_f = 100;
 % sample time (sec)
 h   = 0.1;  % UUV simulations work at 1 Hz
 
@@ -23,39 +26,23 @@ n = round(t_f/h);               % number of samples
 xout = zeros(n+1,10);  % memory allocation
 ns = 1;        % number of pipes seen by ship
 psi_ref = deg2rad(angle_list(1));              % desired heading angle
+i = 1;
+time = 0;
+%xy_norm = zeros(6001,1);
 
-for i=1:n+1
+while ns < length(p_list) && time < n - 1
+    %psi_ref = deg2rad(angle_list(ns));
+    if pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]) < 100
+        ns = ns+1;
+        fprintf('Segment number currently following... %f at time %f\n',round(ns),time)
+    end
+    % Calculate reference psi
+    psi_ref = deg2rad(angle_list(ns));
+    xy_norm(i) = pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]);
+
     time = (i-1)*h;                   % simulation time in seconds
     r   = x(3);
     psi = x(6);
-    
-
-    % Where is the pipe? What is the pipe's angle?
-    % p_list contains the position in x and y positions (end points of segments)
-    % angle_list contains the orientation of these segments
-
-    % Create perpendicular line to ship (defined by end points)
-    [xs1,xs2,ys1,ys2] = perpendicular_to_ship(x(4),x(5),x(6));
-    plot([xs1,xs2],[ys1,ys2],'-');
-
-    nointersection = false;
-    while nointersection || (ns < length(angle_list))
-        % intersection = function pending to write that returns true if lines intersect
-        if intersecting_lines(xs1,xs2,ys1,ys2,p_list(ns,1),p_list(ns+1,1),p_list(ns,2),p_list(ns+1,2))
-            psi_ref = angle_list(ns);
-            nointersection = true;
-            fprintf('Following pipe segment...  ns = %f, time = %f\n', ns, time);
-            break;
-        else
-            fprintf('Ooooops, found no intersection  - ns = %f, time = %f\n', ns , time);
-            fprintf('Ship location (x,y,angle) [%f,%f,%f]\n\n', x(4),x(5),x(6));
-            %Segment endpoints [x1=%f, x2=%f, y1=%f, y2=%f]\n',x(4),x(5),p_list(ns,1),p_list(ns+1,1),p_list(ns,2),p_list(ns+1,2));
-            
-            ns = ns + 1;
-        end
-        plot(x(4),x(5),'s'); %plot ship's current position
-        pause;
-    end
 
     % control system
     delta = -Kp*((psi-psi_ref)+Td*r);  % PD-controller
@@ -69,6 +56,7 @@ for i=1:n+1
     % numerical integration
     x = euler2(xdot,x,h);             % Euler integration
     %pause;
+    i = i+1;
 end
 
 hold on;
