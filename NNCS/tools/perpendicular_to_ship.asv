@@ -2,7 +2,7 @@ function [x1,x2,y1,y2] = perpendicular_to_ship(x,y,angle)
 % len = 60; % 0 meters each side to the UUV
 % Length for ship should be longer since ship's length is around one order
 % of magnitude bigger than that of UUV
-len = 600; %(m)
+len = 600; (
 % Typical line express as y = mx + n (one way of expressing it)
 % m = tan(angle); % slope of ship axis line
 % n = y - m*x; % bias of ship axis line
@@ -18,6 +18,6 @@ x1 = x-len*cos(angle);
 x2 = x+len*cos(angle);
 y1 = y-len*sin(angle);
 y2 = y+len*sin(angle);
-%fprintf('Perpendicular to ship axis: (x1,x2,y1,y2) [%f,%f,%f,%f]\n',x1,x2,y1,y2);
+fprintf('Perpendicular to ship axis: (x1,x2,y1,y2) [%f,%f,%f,%f]\n',x1,x2,y1,y2);
 end
 

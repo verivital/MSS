@@ -35,7 +35,7 @@ while ns < length(p_list)+1 - 1 && i < n - 1
     if pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]) < 100
         ns = ns+1;
         fprintf('Segment #%d currently following at time %f\n',int64(ns),time)
-    elseif xy_norm(i,1) > xy_norm(max(1,i-1),1) && xy_norm(i,2) == xy_norm(max(1,i-1),2)
+    elseif xy_norm(i,1) > xy_norm(max(1,i-1),1) && xy_norm(i,2) == xy_norm(max(1,i-10),2)
         ns = ns+1;
         fprintf('Getting too far from objective\n');
         fprintf('Changed to follow segment #%d at time %f\n',int64(ns),time)
@@ -63,7 +63,7 @@ while ns < length(p_list)+1 - 1 && i < n - 1
     i = i+1;
     if mod(time,10) == 0
         plot(x(4),x(5),'s'); % ship location
-        fprintf('Segment #%d currently following at time %f with ref angle %f\n ',round(ns),time, rad2deg(psi_ref))
+        fprintf('Segment #%d currently following at time %f with ref angle %f\n',round(ns),time, rad2deg(psi_ref))
         %pause;
     end
 end
