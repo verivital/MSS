@@ -30,11 +30,11 @@ i = 1;
 time = 0;
 xy_norm = zeros(n,2);  %memory allocation for distance between ship and objective
 
-while ns < length(p_list) - 1 && i < n - 1
+while ns < length(p_list)+1 - 1 && i < n - 1
     xy_norm(i,:) = [pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]),ns];
     if pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]) < 100
         ns = ns+1;
-        fprintf('Segment # currently following... %d at time %f\n',int64(ns),time)
+        fprintf('Segment #%d currently following at time %f\n',int64(ns),time)
     elseif xy_norm(i,1) > xy_norm(max(1,i-1),1) && xy_norm(i,2) == xy_norm(max(1,i-1),2)
         ns = ns+1;
         fprintf('Getting too far from objective\n');
@@ -42,7 +42,7 @@ while ns < length(p_list) - 1 && i < n - 1
     end
     % Calculate reference psi
     psi_ref = deg2rad(angle_list(ns));
-    xy_norm(i) = pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]);
+    %xy_norm(i) = pdist([x(4),x(5);p_list(ns+1,1), p_list(ns+1,2)]);
 
     time = (i-1)*h;                   % simulation time in seconds
     r   = x(3);
@@ -63,7 +63,7 @@ while ns < length(p_list) - 1 && i < n - 1
     i = i+1;
     if mod(time,10) == 0
         plot(x(4),x(5),'s'); % ship location
-        fprintf('Segment number currently following... %d at time %f\n',round(ns),time)
+        fprintf('Segment #%d currently following at time %f with ref angle %f\n ',round(ns),time, rad2deg(psi_ref))
         %pause;
     end
 end

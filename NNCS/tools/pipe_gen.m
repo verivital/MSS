@@ -54,10 +54,10 @@ for i_p = 2 : p_N
         p_next = p_list(i_p - 1,:) + [L_x,L_y] * rot_theta;
         diff_next = p_next - p_list(i_p-1,:);
         angle_next = rad2deg(atan2(diff_next(2),diff_next(1)));
-        angle_change(i_p) = -angle_list(i_p-1) + angle_next
+        angle_change = angle_next - angle_list(i_p-1);
         if abs(angle_next - angle_list(i_p-1)) < 90
             bad_angle = 0;
-            fprintf('Good angle\n');
+            fprintf('Good angle %f\n', angle_next);
         else
             fprintf('No, I do not like that one\n')
         end       
@@ -99,12 +99,15 @@ for i_p = 2 : p_N
 %             bad_angle = 0
 %         end
     end
-    angle_list(i_p-1) = angle_next;
+    angle_list(i_p) = angle_next;
     p_list(i_p,:) = p_next;
     fprintf('Adding next segment...\n')
     plot(p_list(1:i_p,1), p_list(1:i_p,2),'*-');
+    axis([min(min(p_list)),max(max(p_list)),min(min(p_list)),max(max(p_list))]);
     %pause;
 end
+
+angle_list = [angle_list(2:end);0];
 
 %plot(p_list(:,1), p_list(:,2),'*-');
 % mm = max(max(abs(p_list))); 
