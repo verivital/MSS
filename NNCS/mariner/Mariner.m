@@ -83,11 +83,11 @@ m32 = m*xG-Nvdot;
 m33 = Iz-Nrdot;
 
 % Rudder saturation and dynamics
-if abs(delta_c) >= delta_max*pi/180,
+if abs(delta_c) >= delta_max*pi/180
    delta_c = sign(delta_c)*delta_max*pi/180;
 end
 delta_dot = delta_c - delta;
-if abs(delta_dot) >= Ddelta_max*pi/180,
+if abs(delta_dot) >= Ddelta_max*pi/180
    delta_dot = sign(delta_dot)*Ddelta_max*pi/180;
 end
 
