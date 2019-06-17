@@ -11,7 +11,7 @@ echo on
 echo off 
 disp('Simulating mariner.m under PD-control with psi_ref=5 (deg) ...')
 
-t_f = 600;   % final simulation time (sec)
+t_f = 45000;   % final simulation time (sec)
 h   = 0.1;   % sample time (sec)
 
 Kp = 1;      % controller P-gain
@@ -23,6 +23,11 @@ x = zeros(7,1);
 % --- MAIN LOOP ---
 N = round(t_f/h);               % number of samples
 xout = zeros(N+1,length(x)+2);  % memory allocation
+%tvec = [0 : h : t_f];
+
+v_psi_ref = zeros(N+1,2);
+
+psi_ref = 180 * (pi/180);
 
 for i=1:N+1,
     time = (i-1)*h;                   % simulation time in seconds
@@ -31,7 +36,22 @@ for i=1:N+1,
     psi = x(6);
     
     % control system
-    psi_ref = 5*(pi/180);              % desired heading
+    if time < 18000
+        if mod(time,300) == 0
+            psi_ref = -psi_ref;              % desired heading
+        end
+    else
+        if time == 18000
+            psi_ref = 270 * (pi/180);
+        end
+        if time == 21000
+            psi_ref = 360 * (pi/180);
+        end
+        if mod(time,300) == 0
+            psi_ref = -psi_ref;              % desired heading
+        end
+        %psi_ref = 45*(pi/180);
+    end
     delta = -Kp*((psi-psi_ref)+Td*r);  % PD-controller
 
     % ship model
@@ -39,6 +59,7 @@ for i=1:N+1,
     
     % store data for presentation
     xout(i,:) = [time,x',U]; 
+    v_psi_ref(i,:) = [time,psi_ref]; 
     
     % numerical integration
     x = euler2(xdot,x,h);             % Euler integration
@@ -58,6 +79,9 @@ U     = xout(:,9);
 % plots
 figure(1)
 plot(y,x),grid,axis('equal'),xlabel('East'),ylabel('North'),title('Ship position')
+
+figure(3);
+plot3(y,x,t);
 
 figure(2)
 subplot(221),plot(t,r),xlabel('time (s)'),title('yaw rate r (deg/s)'),grid

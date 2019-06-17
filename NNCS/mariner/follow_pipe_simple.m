@@ -8,7 +8,7 @@ pipe_gen; %could make this a function and have as inputs the number of segments
 hold on;
 %pause;clc;
 % final simulation time (sec)
-t_f = 10000;
+t_f = 20000;
 % sample time (sec)
 h   = 0.1;  % UUV simulations work at 1 Hz
 
@@ -62,9 +62,14 @@ while ns < length(p_list)+1 - 1 && i < n - 1
     %pause;
     i = i+1;
     if mod(time,10) == 0
-        plot(x(4),x(5),'s'); % ship location
+        plot(x(4),x(5),'.-k'); % ship location
         fprintf('Segment #%d currently following at time %f with ref angle %f\n',round(ns),time, rad2deg(psi_ref))
         %pause;
     end
 end
+
+xlabel('x (m)');
+ylabel('y (m)');
+axis equal;
+
 %plot(xout(:,5),xout(:,6));

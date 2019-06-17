@@ -10,7 +10,7 @@ y_init = y_range(1) + (y_range(2) - y_range(1)).*rand(1,1);
 p_init = [x_init,y_init];
 
 % number of points (number of line segments = p_N - 1)
-p_N = 25;
+p_N = 50;
 
 % max length of pipe (along axes, triangle may be larger)
 % For actual UUV
