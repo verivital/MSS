@@ -17,8 +17,8 @@ p_N = 50;
 % L_max = 500;
 % L_min = 25; 
 % For mariner
-L_max = 1500;
-L_min = 1500; 
+% L_max = 3000;
+% L_min = 1500; 
 L_hyp = sqrt(L_max^2 + L_min^2);
 
 % List of begin-end points for pipes

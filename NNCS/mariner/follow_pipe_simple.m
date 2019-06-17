@@ -2,16 +2,19 @@
 % It follows the angle of a pipe until the ship s close enough to the
 % begining of the next pipe segment, and updates its desired heading angle
 % to that of the next segment
-addpath(genpath('C:\Users\manzand\Documents\MATLAB\MSS')); % add path to MATLAB
+%addpath(genpath('C:\Users\manzand\Documents\MATLAB\MSS')); % add path to MATLAB
+
 % Generate pipeline
 pipe_gen; %could make this a function and have as inputs the number of segments
 hold on;
 %pause;clc;
+
 % final simulation time (sec)
 t_f = 20000;
 % sample time (sec)
 h   = 0.1;  % UUV simulations work at 1 Hz
 
+%controller parameters
 Kp = 1;      % controller P-gain
 Td = 10;     % controller derivative time
 
