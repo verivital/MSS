@@ -12,7 +12,7 @@ function [xout] = follow_pipeline_simple_NN(L,n_P,vehicle,n_s,n_x,n_y,n_psi,t_f,
 %   t_f = final time step for simulation
 %   h = time step (s)
 %   out_mat = matrix with the number and location of plant outputs into controller
-%   
+%   NN = name of neural network controller
 %
 % One example on how to run this code may be
 % [xout] = follow_pipeline_simple_NN(160.93,25,@Mariner,7,4,5,6,10000,0.1,[3 6],'controller_mariner_3in_net.mat');
