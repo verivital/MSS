@@ -78,7 +78,7 @@ for i=1:n+1
     
     % control system
     % delta = -Kp*((x(out(2))-psi_ref)+Td*x(out(1)));  % PD-controller
-    delta = net([out(1);out(2);psi_ref]);
+    delta = net([x(out(1));x(out(2));psi_ref]);
     
     % ship model
     xdot = vehicle(x,delta);       % ship model, see .../gnc/VesselModels/
