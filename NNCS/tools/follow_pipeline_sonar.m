@@ -64,7 +64,7 @@ for i=1:n+1
             fprintf('Ship location (x,y,angle) [%f,%f,%f]\n\n', x(4),x(5),x(6));
             %Segment endpoints [x1=%f, x2=%f, y1=%f, y2=%f]\n',x(4),x(5),p_list(ns,1),p_list(ns+1,1),p_list(ns,2),p_list(ns+1,2));
             ns = ns + 1;
-            pause;
+            %pause;
             break;
         end
         %plot(x(4),x(5),'s'); %plot ship's current position

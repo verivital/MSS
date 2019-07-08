@@ -1,4 +1,4 @@
-function [xout] = follow_pipeline_sonar_NN(L,n_P,vehicle,n_s,n_x,n_y,n_psi,t_f,h,out_mat)
+function [xout] = follow_pipeline_sonar_NN(L,n_P,vehicle,n_s,n_x,n_y,n_psi,t_f,h,out_mat,NN)
 %%FOLLOW_PIPELINE_SONAR
 % Given a determined vehicle dynamics, it will follow a pipeline (created by pipe_gen) either via waypoints or sonar simulation
 % [xout] = follow_pipeline_general(L,vehicle,t_f,h,mode)
@@ -15,7 +15,7 @@ function [xout] = follow_pipeline_sonar_NN(L,n_P,vehicle,n_s,n_x,n_y,n_psi,t_f,h
 %   NN = name of neural network controller
 %
 % One example on how to run this code may be
-% [xout] = follow_pipeline_sonar(160.93,25,@Mariner,7,4,5,6,10000,0.1,[3 6],'controller_mariner_3in_net.mat');
+% [xout] = follow_pipeline_sonar_NN(160.93,25,@Mariner,7,4,5,6,10000,0.1,[3 6],'controller_mariner_3in_net.mat');
 
 % Generate pipeline
 L_min = 10*L; 
@@ -24,7 +24,7 @@ L_max = L_min + 1500; %(m)
 hold on; % to plot vehicle trajectory on same graph
 
 %controller
-load NN;
+load(NN);
 
 % initial states:  x = [ u v r x y psi delta ]' (for mariner)
 x = zeros(n_s,1);
@@ -64,7 +64,7 @@ for i=1:n+1
             fprintf('Ship location (x,y,angle) [%f,%f,%f]\n\n', x(4),x(5),x(6));
             %Segment endpoints [x1=%f, x2=%f, y1=%f, y2=%f]\n',x(4),x(5),p_list(ns,1),p_list(ns+1,1),p_list(ns,2),p_list(ns+1,2));
             ns = ns + 1;
-            pause;
+            %pause;
             break;
         end
         %plot(x(4),x(5),'s'); %plot ship's current position
@@ -77,8 +77,9 @@ for i=1:n+1
     end
     
     % control system
-    delta = -Kp*((x(out(2))-psi_ref)+Td*x(out(1)));  % PD-controller
-
+    % delta = -Kp*((x(out(2))-psi_ref)+Td*x(out(1)));  % PD-controller
+    delta = net([out(1);out(2);psi_ref]);
+    
     % ship model
     xdot = vehicle(x,delta);       % ship model, see .../gnc/VesselModels/
 
