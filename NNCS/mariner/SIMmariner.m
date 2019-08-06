@@ -45,7 +45,7 @@ for j=1:sims
         delta = -Kp*((psi-psi_ref)+Td*r);  % PD-controller
 
         % ship model
-        [xdot,U,X,Y,N] = mariner(x,delta);       % ship model, see .../gnc/VesselModels/
+        [xdot,U,X,Y,N] = Mariner(x,delta);       % ship model, see .../gnc/VesselModels/
 
         % store data for presentation
         xout(i,:) = [time,x',U,X,Y,N]; 
@@ -98,6 +98,62 @@ error = reshape(erro,1,(n+1)*sims);
 cont_out = reshape(conto,1,(n+1)*sims);
 xdot  = reshape(xderio,7,(n+1)*sims);
 
+% Plot the data (last simulation)
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,2));
+xlabel('time (s)');
+ylabel('u (m/s)')
+title('Pertubed surge velocity about Uo');
+saveas(fi,'figures/usim','png');
+
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,3));
+xlabel('time (s)');
+ylabel('v (m/s)')
+title('Pertubed sway velocity about zero');
+saveas(fi,'figures/vsim','png');
+
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,4));
+xlabel('time (s)');
+ylabel('r (rad/s)')
+title('Pertubed yaw velocity about zero');
+saveas(fi,'figures/rsim','png');
+
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,5));
+xlabel('time (s)');
+ylabel('x (m)')
+title('Position x-direction');
+saveas(fi,'figures/xsim','png');
+
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,6));
+xlabel('time (s)');
+ylabel('y (m)')
+title('Position y-direction');
+saveas(fi,'figures/ysim','png');
+
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,7));
+xlabel('time (s)');
+ylabel('psi (rad)')
+title('Pertubed yaw angle about zero');
+saveas(fi,'figures/psisim','png');
+
+fi = figure('visible','off');
+plot(xout(:,1),xout(:,8));
+xlabel('time (s)');
+ylabel('rudder angle (rad)')
+title('Actual rudder angle');
+saveas(fi,'figures/deltasim','png');
+
+fi = figure('visible','off');
+plot(xout(:,5),xout(:,6));
+xlabel('x (m)');
+ylabel('y (m)')
+title('Ship trajectory');
+saveas(fi,'figures/xysim','png');
 
 % Shuffle the data before training any NN
 datatr = [xin; U; X; Y; N; u; v; r; x; y; psi; delta; psi_ref; error; cont_out; xdot];
@@ -142,37 +198,37 @@ end
 % gensim(net);
 
 %% Train NN controller to substitute PID
-layers = [10 10];
-netc = feedforwardnet(layers,'trainlm');
-netc.inputs{1}.processFcns = {};
-netc.outputs{length(layers)+1}.processFcns = {};
-netc.inputs{1}.size = 3;
-netc.layers{length(layers)+1}.size = 1;
-
-netc.layers{1}.transferFcn = 'poslin'; %poslin = relu
-netc.layers{2}.transferFcn = 'poslin'; %poslin = relu
-netc.layers{3}.transferFcn = 'purelin'; %poslin = relu
-%net.layers{4}.transferFcn = 'purelin'; %poslin = relu
-%net.layers{5}.transferFcn = 'purelin'; % purelin = linear
-netc.trainParam.epochs = 10000;
-netc.trainParam.max_fail = 10;
-netc.trainParam.mu_max = 10e20;
-netc.trainParam.goal = 0.0000000001;
-netc.performFcn = 'mse';%help nnperformance to see list of options
-netc.trainParam.min_grad = 1e-11;
-% datatr = [xin(7-dim); U; X; Y; N; u, v, r, x, y, psi, delta, psi_ref; error; cont_out];
-in3 = {[data(14,1:200000); data(17,1:200000) ;data(19,1:200000)]};
-out3 = {data(21,1:200000)};
-in_test3 = {[data(14,end-10000:end); data(17,end-10000:end); data(19,end-10000:end)]};
-out_test3 = {data(21,end-10000:end)};
-in2 = {[data(14,1:200000); data(17,1:200000) - data(19,1:200000)]};
-out2 = {data(21,1:200000)};
-in_test2 = {[data(14,end-10000:end); data(17,end-10000:end) - data(19,end-10000:end)]};
-out_test2 = {data(21,end-10000:end)};
-
-netc = train(netc,in3,out3,'useGPU','yes','useParallel','no','showResources','yes');
-outnet3 = netc(in_test3);
-perf = perform(netc,out_test3,outnet3)
+% layers = [10 10];
+% netc = feedforwardnet(layers,'trainlm');
+% netc.inputs{1}.processFcns = {};
+% netc.outputs{length(layers)+1}.processFcns = {};
+% netc.inputs{1}.size = 3;
+% netc.layers{length(layers)+1}.size = 1;
+% 
+% netc.layers{1}.transferFcn = 'poslin'; %poslin = relu
+% netc.layers{2}.transferFcn = 'poslin'; %poslin = relu
+% netc.layers{3}.transferFcn = 'purelin'; %poslin = relu
+% %net.layers{4}.transferFcn = 'purelin'; %poslin = relu
+% %net.layers{5}.transferFcn = 'purelin'; % purelin = linear
+% netc.trainParam.epochs = 10000;
+% netc.trainParam.max_fail = 10;
+% netc.trainParam.mu_max = 10e20;
+% netc.trainParam.goal = 0.0000000001;
+% netc.performFcn = 'mse';%help nnperformance to see list of options
+% netc.trainParam.min_grad = 1e-11;
+% % datatr = [xin(7-dim); U; X; Y; N; u, v, r, x, y, psi, delta, psi_ref; error; cont_out];
+% in3 = {[data(14,1:200000); data(17,1:200000) ;data(19,1:200000)]};
+% out3 = {data(21,1:200000)};
+% in_test3 = {[data(14,end-10000:end); data(17,end-10000:end); data(19,end-10000:end)]};
+% out_test3 = {data(21,end-10000:end)};
+% in2 = {[data(14,1:200000); data(17,1:200000) - data(19,1:200000)]};
+% out2 = {data(21,1:200000)};
+% in_test2 = {[data(14,end-10000:end); data(17,end-10000:end) - data(19,end-10000:end)]};
+% out_test2 = {data(21,end-10000:end)};
+% 
+% netc = train(netc,in3,out3,'useGPU','yes','useParallel','no','showResources','yes');
+% outnet3 = netc(in_test3);
+% perf = perform(netc,out_test3,outnet3)
 
 %% Train a NN to substitute the explicit plant (Compute xdot from previous state + input)
 % layers = [24 48 48 48 24];
