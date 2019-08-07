@@ -1,6 +1,6 @@
 function [xdot,U] = npsauv(x,ui)
 % [xdot,U] = NPSAUV(x,ui) returns the speed U in m/s (optionally) and the 
-% time derivative of the state vector: x = = [ u v w p q r x y z phi theta psi ]' for
+% time derivative of the state vector: x = [ u v w p q r x y z phi theta psi ]' for
 % an Autnomous Underwater Vehicle (AUV) at the Naval Postgraduate School, Monterrey.
 % The length of the AUV is L = 5.3 m, while the state vector is defined as:
 %
@@ -40,6 +40,7 @@ function [xdot,U] = npsauv(x,ui)
 %            24-Mar-2003, Gianluca Antonelli/Thor I. Fossen: corrected an error in the restoring 
 %                         force Z, that is (W-B)*cos(theta)*cos(phi).
 %            13-Nov-2014, Anand Sundaresan, Mwn*w*n was corrected to Mwn*w*u
+%            01-Aug-2019, David Hansch, corrected bugs in the cross-flow drag formulae
 
 % Check of input and state dimensions
 if (length(x) ~= 12),error('x-vector must have dimension 12 !');end
@@ -118,7 +119,7 @@ Nwp   = -1.7e-2; Nwr    =  7.4e-3; Nv    = -7.4e-3; Nvw   = -2.7e-2;
 Ndr   = -1.3e-2; Nprop  =  0;
 
 % Rudder and shaft saturations
-for i=1:1:6,
+for i=1:1:6
    if abs(ui(i))>max_ui(i),ui(i)=sign(ui(i))*max_ui(i);end
 end
  
@@ -158,26 +159,26 @@ dxL = L/10;
 xL  = 0; 
 Ucf = sqrt((v+xL*r)^2+(w-xL*q)^2);
 
-if ~(Ucf == 0),
-    for xL = 0:dxL:L
+if ~(Ucf == 0)
+    for xL = -L/2:dxL:L/2
         Ucf = sqrt((v+xL*r)^2+(w-xL*q)^2);
         temp = (0.5*0.6*(v+xL*r)^2+0.6*(w-xL*q)^2)*(v+xL*r)/Ucf; 
         Cy = Cy + dxL*temp;
     end
     
-    for xL = 0:dxL:L
+    for xL = -L/2:dxL:L/2
         Ucf = sqrt((v+xL*r)^2+(w-xL*q)^2);
         temp = (0.5*0.6*(v+xL*r)^2+0.6*(w-xL*q)^2)*(w-xL*q)/Ucf;
         Cz = Cz + dxL*temp;
     end
     
-    for xL = 0:dxL:L
+    for xL = -L/2:dxL:L/2
         Ucf = sqrt((v+xL*r)^2+(w-xL*q)^2);
         temp = (0.5*0.6*(v+xL*r)^2+0.6*(w-xL*q)^2)*(w+xL*q)/Ucf*xL;
         Cm = Cm + dxL*temp;
     end
     
-    for xL = 0:dxL:L
+    for xL = -L/2:dxL:L/2
         Ucf = sqrt((v+xL*r)^2+(w-xL*q)^2);
         temp = (0.5*0.6*(v+xL*r)^2+0.6*(w-xL*q)^2)*(v+xL*r)/Ucf*xL;
         Cn = Cn + dxL*temp;
